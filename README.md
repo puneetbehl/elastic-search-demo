@@ -19,7 +19,7 @@ elasticSearch:
     cluster.name: elasticsearch_puneet
 ```
 
-**Note:** Make sure you need to indent the `yaml` configurations with spaces. 
+**Note:** Make sure that you indent the `yaml` configurations with spaces. 
 
 
 #### List of Examples:
