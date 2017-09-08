@@ -20,6 +20,13 @@ apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
 
+def elasticsearchVersion = '2.3.4'
+ext['elasticsearch.version'] = elasticsearchVersion
+
+bootRun {
+    jvmArgs = ["-Des.path.home=${System.properties['ES_HOME']}"]
+}
+
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
