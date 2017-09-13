@@ -21,4 +21,4 @@ elasticSearch:
 
 **Note:** Make sure that you indent the `yaml` configurations with spaces. 
 
-[Examples](http://puneetbehl.github.io/esdemo_3.2.4/docs/index.html)
+[Click here to see examples](http://puneetbehl.github.io/esdemo_3.2.4/index.html)
