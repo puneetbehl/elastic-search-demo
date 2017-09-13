@@ -1,0 +1,9 @@
+POST esdemo/user/1
+{
+"firstName" : "test"
+}
+
+POST esdemo/user/2
+{
+"fullName" : "test"
+}

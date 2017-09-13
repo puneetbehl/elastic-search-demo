@@ -1,0 +1,74 @@
+[[index-time-boost]]
+=== Index time `boost` 'or' Static boosting
+
+In this `boost` factor is calculated based on the nature of document.
+
+[[NOTE]]
+====
+Using index time boosting you need to reindex to change the boosting behaviour.
+====
+
+The `boost` factor at index time sets a document related boost. That is, a factor depending on the nature of the document is being set in the relevance scoring formula.
+
+==== Example:
+
+The number of links pointing to this document (also known as popularity or authority ranking in web search). Such a boost factor is also called "static boost" since it does not change from query to query. If static boost must change, the whole document must be reindexed.
+
+[source, javascript]
+----
+PUT esdemo_v0
+{
+  "mappings": {
+    "book": {
+      "properties": {
+        "title": {
+          "type": "string",
+          "boost": 2
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
+----
+
+[[INFO]]
+====
+Matches on the title field will have twice the weight as those on the content field, which has the default boost of 1.0.
+====
+
+The only advantage that index time boosting has is that it is copied with the value into the `_all` field. This means that, when querying the `_all` field, words that originated from the title field will have a higher score than words that originated in the content field. This functionality comes at a cost: queries on the _all field are slower when index-time boosting is used.
+
+You can achieve this using Elasticsearch Grails plugin as:
+
+:domain: {projectHome}/grails-app/domain
+
+[source, groovy]
+----
+include::{domain}/esdemo/Book.groovy[]
+----
+
+Now, when you query on `Book` domain, then you wiil notice that in result, instance having "Elasticsearch" in `title` field has double score as compared to other having "Elasticsearch" in content. Following is the test case which illustrate this:
+
+:integrationTests: {projectHome}/src/integration-test/groovy
+
+[source, groovy]
+----
+include::{integrationTests}/esdemo/BookSpec.groovy[lines=19..35]
+----
+
+[source, groovy]
+.Result
+-----
+results.scores["1"] == 2 * results.scores["2"]
+|       |     |     |    | |       |     |
+|       |     |     true | |       |     |
+|       |     0.2972674  | |       |     0.1486337
+|       |                | |       [1:0.2972674, 2:0.1486337]
+|       |                | [total:2, searchResults:[esdemo.Book : 1, esdemo.Book : 2], scores:[1:0.2972674, 2:0.1486337]]
+|       |                0.2972674
+|       [1:0.2972674, 2:0.1486337]
+[total:2, searchResults:[esdemo.Book : 1, esdemo.Book : 2], scores:[1:0.2972674, 2:0.1486337]]
+-----
