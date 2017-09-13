@@ -1,0 +1,7 @@
+[[query-time-boost]]
+=== Query time `boost` 'or' Dynamic boosting
+
+
+==== Example
+
+The `boost` factor given at query time is query term related. That is, a factor depending on a term in the query is being set in the relevance scoring formula. Example: hits on docs with a certain term should be ranked higher than hits on docs with other terms in the query. Such a boost factor is called "dynamic boost" because it can change from query to query. There is no need to reindex docs.

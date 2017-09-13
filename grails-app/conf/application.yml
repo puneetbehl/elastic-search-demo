@@ -132,3 +132,9 @@ elasticSearch:
     client:
         mode: transport
     cluster.name: elasticsearch_puneet
+
+environments:
+    test:
+      elasticSearch:
+        index:
+          name: esdemo_test

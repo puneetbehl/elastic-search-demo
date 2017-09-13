@@ -8,7 +8,6 @@ class Category {
 
     static transients = ['lastUpdated' , 'names']
     static searchable = {
-
         only = ['lastUpdated', 'createdDate' , 'names']
     }
 }

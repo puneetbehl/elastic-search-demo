@@ -1,0 +1,8 @@
+= Elasticsearch Grails Plugin - Samples
+Puneet Behl
+
+//:jasper: http://community.jaspersoft.com/project/jasperreports-library/resources
+
+include::installation.adoc[]
+
+include::boost.adoc[]

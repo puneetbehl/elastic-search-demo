@@ -30,7 +30,8 @@ def asciidoctorAttributes = [
         toc                 : 'left',
         toc2                : '',
         toclevels           : '2',
-        grailsVersion       : project.grailsVersion
+        grailsVersion       : project.grailsVersion,
+        projectHome         : project.rootDir
 ]
 
 import org.asciidoctor.gradle.AsciidoctorTask

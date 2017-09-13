@@ -1,0 +1,13 @@
+[[Boost]]
+== Boost
+
+If you don't know what does `boost` means in Elasticsearch. I would suggest to give a quick read at https://www.elastic.co/guide/en/elasticsearch/guide/current/_boosting_query_clauses.html[Elasticsearch documentation] on `boost`
+
+In Grails Elasticsearch plugin, `boost` is possible in two ways:
+
+* https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-index-boost.html[Index time boost] or Static boosting
+* https://www.elastic.co/guide/en/elasticsearch/reference/5.4/mapping-boost.html[Query time boost]
+
+include::boost/index-time-boost.adoc[]
+
+include::boost/query-time-boost.adoc[]
