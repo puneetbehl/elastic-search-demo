@@ -56,12 +56,12 @@ Now, when you query on `Book` domain, then you wiil notice that in result, insta
 
 [source, groovy]
 ----
-include::{integrationTests}/esdemo/BookSpec.groovy[lines=19..35]
+include::{integrationTests}/esdemo/BookSpec.groovy[lines=21..38]
 ----
 
 [source, groovy]
 .Result
------
+----
 results.scores["1"] == 2 * results.scores["2"]
 |       |     |     |    | |       |     |
 |       |     |     true | |       |     |
@@ -71,4 +71,4 @@ results.scores["1"] == 2 * results.scores["2"]
 |       |                0.2972674
 |       [1:0.2972674, 2:0.1486337]
 [total:2, searchResults:[esdemo.Book : 1, esdemo.Book : 2], scores:[1:0.2972674, 2:0.1486337]]
------
+----

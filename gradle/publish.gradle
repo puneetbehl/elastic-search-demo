@@ -6,7 +6,7 @@ ext {
 }
 
 githubPages {
-    repoUri = 'https://github.com/puneetbehl/grails-jasper.git'
+    repoUri = 'https://github.com/puneetbehl/esdemo_3.2.4.git'
 
     credentials {
         username = project.hasProperty('githubApiKey') ? project.githubApiKey : ''

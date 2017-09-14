@@ -1,7 +1,73 @@
 [[query-time-boost]]
 === Query time `boost` 'or' Dynamic boosting
 
+We can control the relative weight of any query clause by specifying a boost value, which defaults to 1. A boost value greater than 1 increases the relative weight of that clause. So we could rewrite the preceding query as follows:
 
-==== Example
+[source, javascript]
+----
+ GET /_search
+ {
+     "query": {
+         "bool": {
+             "must": {
+                 "match": {
+                     "content": {
+                         "query":    "full text search",
+                         "operator": "and"
+                     }
+                 }
+             },
+             "should": [
+                 { "match": {
+                     "content": {
+                         "query": "Elasticsearch",
+                         "boost": 3
+                     }
+                 }},
+                 { "match": {
+                     "content": {
+                         "query": "Lucene",
+                         "boost": 2
+                     }
+                 }}
+             ]
+         }
+     }
+ }
+----
 
+
+
+[[NOTE]]
+====
 The `boost` factor given at query time is query term related. That is, a factor depending on a term in the query is being set in the relevance scoring formula. Example: hits on docs with a certain term should be ranked higher than hits on docs with other terms in the query. Such a boost factor is called "dynamic boost" because it can change from query to query. There is no need to reindex docs.
+====
+
+Query term boost can be done in Elasticsearch Grails plugin as:
+
+:integrationTests: {projectHome}/src/integration-test/groovy
+
+[source, groovy]
+----
+include::{integrationTests}/esdemo/BookSpec.groovy[lines=40..72]
+----
+
+[source, groovy]
+.Result
+----
+2 * results.scores["3"] == 3 * results.scores["4"]
+  | |       |     |     |    | |       |     |
+  | |       |     |     true | |       |     0.48725736
+  | |       |     0.730886   | |       [3:0.730886, 4:0.48725736]
+  | |       |                | [total:2, searchResults:[esdemo.Book : 3, esdemo.Book : 4], scores:[3:0.730886, 4:0.48725736]]
+  | |       |                1.461772
+  | |       [3:0.730886, 4:0.48725736]
+  | [total:2, searchResults:[esdemo.Book : 3, esdemo.Book : 4], scores:[3:0.730886, 4:0.48725736]]
+  1.461772
+----
+
+
+In the above query, please note that:
+
+* "Elasticserach" found in title is given 3 times more importance
+* "Lucene" found in title is given 2 times more importance
