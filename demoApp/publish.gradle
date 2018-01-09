@@ -6,7 +6,7 @@ ext {
 }
 
 githubPages {
-    repoUri = 'https://github.com/puneetbehl/esdemo_3.2.4.git'
+    repoUri = 'https://github.com/puneetbehl/elastic-search-demo.git'
 
     credentials {
         username = project.hasProperty('githubApiKey') ? project.githubApiKey : ''
