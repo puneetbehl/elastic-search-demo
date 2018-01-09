@@ -521,7 +521,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in boost/index-time-boost.adoc - include::/Users/pbehl/Projects/elasticsearch-demo/grails-app/domain/esdemo/Book.groovy[]</code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">package esdemo
+
+class Book {
+    String title
+    String content
+    String datePublished
+
+    static searchable = {
+        title boost: 2.0
+        content boost: 1.0
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -529,7 +540,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in boost/index-time-boost.adoc - include::/Users/pbehl/Projects/elasticsearch-demo/src/integration-test/groovy/esdemo/BookSpec.groovy[lines=21..38]</code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    void "should double the score of search hit when 'Elasticsearch` is found in title field as compared to content field"() {
+        setup:
+        List&lt;Book&gt; books =[]
+        books &lt;&lt; new Book(title: "Elasticsearch Introduction", content: "basic introduction", datePublished: new Date()).save(flush: true, failOnError: true)
+        books &lt;&lt; new Book(title: "Hello World", content: "Elasticsearch", datePublished: new Date()).save(flush: true, failOnError: true)
+
+        when:
+        elasticSearchService.index(Book)
+        elasticSearchAdminService.refresh()
+        def results = Book.search("Elasticsearch", [score: true])
+
+        then:
+        results.scores["1"] == 2 * results.scores["2"]
+
+        cleanup:
+        elasticSearchService.unindex(Book)
+        Book.deleteAll()
+    }</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -598,7 +626,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Unresolved directive in boost/query-time-boost.adoc - include::/Users/pbehl/Projects/elasticsearch-demo/src/integration-test/groovy/esdemo/BookSpec.groovy[lines=40..72]</code></pre>
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    void "dynamic boosting, hits on docs with a certain term should be ranked higher than hits on docs with other terms in the query"() {
+        setup:
+        List&lt;Book&gt; books =[]
+        books &lt;&lt; new Book(title: "Elasticsearch Introduction", content: "basic introduction", datePublished: new Date()).save(flush: true, failOnError: true)
+        books &lt;&lt; new Book(title: "Hello Lucene", content: "Elasticsearch", datePublished: new Date()).save(flush: true, failOnError: true)
+        books &lt;&lt; new Book(title: "Hello World", content: "Elasticsearch", datePublished: new Date()).save(flush: true, failOnError: true)
+
+        when:
+        elasticSearchService.index(Book)
+        elasticSearchAdminService.refresh()
+        Closure query = {
+            bool {
+                should {
+                    match {
+                        title(query: "Elasticsearch", boost: 3.0)
+                    }
+                }
+                should {
+                    match {
+                        title(query: "Lucene", boost: 2.0)
+                    }
+                }
+            }
+        }
+        def results = Book.search (query, null, [score: true])
+
+        then:
+        (2 * results.scores["3"])?.round(6) == (3 * results.scores["4"])?.round(6)
+
+        cleanup:
+        elasticSearchService.unindex(Book)
+        Book.deleteAll()
+    }</code></pre>
 </div>
 </div>
 <div class="listingblock">
