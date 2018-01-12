@@ -431,10 +431,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#installation">1. Installation</a></li>
-<li><a href="#Boost">2. Boost</a>
+<li><a href="#mapping">2. Mapping</a>
 <ul class="sectlevel2">
-<li><a href="#index-time-boost">2.1. Index time <code>boost</code> 'or' Static boosting</a></li>
-<li><a href="#query-time-boost">2.2. Query time <code>boost</code> 'or' Dynamic boosting</a></li>
+<li><a href="#defaultMapping">2.1. Default Mapping</a></li>
+</ul>
+</li>
+<li><a href="#Boost">3. Boost</a>
+<ul class="sectlevel2">
+<li><a href="#index-time-boost">3.1. Index time <code>boost</code> 'or' Static boosting</a></li>
+<li><a href="#query-time-boost">3.2. Query time <code>boost</code> 'or' Dynamic boosting</a></li>
 </ul>
 </li>
 </ul>
@@ -448,7 +453,108 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="Boost">2. Boost</h2>
+<h2 id="mapping">2. Mapping</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="defaultMapping">2.1. Default Mapping</h3>
+<div class="paragraph">
+<p>To declare a domain class to be searchable, the simplest way is to define the following static property in the code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">static searchable = true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">package esdemo
+
+class Store {
+
+    String name
+    String description = "A description of a store"
+    String owner = "Owner of the store"
+
+    static searchable = true
+
+    static constraints = {
+        name blank: false
+        description nullable: true
+        owner nullable: false
+    }
+
+    static mapping = {
+        autoImport(false)
+    }
+
+    public String toString() {
+        name
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The plugin will generate a default mapping for each properties of the domain <code>Store</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-json" data-lang="json">{
+  "mappings": {
+    "store": {
+      "properties": {
+        "owner": {
+          "include_in_all": true,
+          "term_vector": "with_positions_offsets",
+          "type": "text"
+        },
+        "name": {
+          "include_in_all": true,
+          "term_vector": "with_positions_offsets",
+          "type": "text"
+        },
+        "description": {
+          "include_in_all": true,
+          "term_vector": "with_positions_offsets",
+          "type": "text"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following test verifies that mappings are generated for each property of domain class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">    void "default mapping, should index all properites of domain class"() {
+
+        setup:
+        Store store = new Store(name: 'Eltern-Elternelement', owner: 'Horst')
+
+        when:
+        elasticSearchService.index(Store)
+        elasticSearchAdminService.refresh(Store)
+        SearchableClassMapping storeMapping = elasticSearchContextHolder.getMappingContextByType(Store)
+
+        then:
+        storeMapping.propertiesMapping*.grailsProperty*.name.containsAll(['name', 'description', 'owner'])
+
+        cleanup:
+        elasticSearchService.unindex(Store)
+        Store.deleteAll()
+    }</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Boost">3. Boost</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>If you don&#8217;t know what does <code>boost</code> means in Elasticsearch. I would suggest to give a quick read at <a href="https://www.elastic.co/guide/en/elasticsearch/guide/current/_boosting_query_clauses.html">Elasticsearch documentation</a> on <code>boost</code></p>
@@ -467,7 +573,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </div>
 <div class="sect2">
-<h3 id="index-time-boost">2.1. Index time <code>boost</code> 'or' Static boosting</h3>
+<h3 id="index-time-boost">3.1. Index time <code>boost</code> 'or' Static boosting</h3>
 <div class="paragraph">
 <p>In this <code>boost</code> factor is calculated based on the nature of document.</p>
 </div>
@@ -482,7 +588,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>The <code>boost</code> factor at index time sets a document related boost. That is, a factor depending on the nature of the document is being set in the relevance scoring formula.</p>
 </div>
 <div class="sect3">
-<h4 id="example">2.1.1. Example:</h4>
+<h4 id="example">3.1.1. Example:</h4>
 <div class="paragraph">
 <p>The number of links pointing to this document (also known as popularity or authority ranking in web search). Such a boost factor is also called "static boost" since it does not change from query to query. If static boost must change, the whole document must be reindexed.</p>
 </div>
@@ -544,7 +650,7 @@ class Book {
         setup:
         List&lt;Book&gt; books =[]
         books &lt;&lt; new Book(title: "Elasticsearch Introduction", content: "basic introduction", datePublished: new Date()).save(flush: true, failOnError: true)
-        books &lt;&lt; new Book(title: "Hello World", content: "Elasticsearch", datePublished: new Date()).save(flush: true, failOnError: true)
+        books &lt;&lt; new Book(title: "Hello World", content: "Elasticsearch Introduction", datePublished: new Date()).save(flush: true, failOnError: true)
 
         when:
         elasticSearchService.index(Book)
@@ -577,7 +683,7 @@ class Book {
 </div>
 </div>
 <div class="sect2">
-<h3 id="query-time-boost">2.2. Query time <code>boost</code> 'or' Dynamic boosting</h3>
+<h3 id="query-time-boost">3.2. Query time <code>boost</code> 'or' Dynamic boosting</h3>
 <div class="paragraph">
 <p>We can control the relative weight of any query clause by specifying a boost value, which defaults to 1. A boost value greater than 1 increases the relative weight of that clause. So we could rewrite the preceding query as follows:</p>
 </div>
@@ -695,7 +801,7 @@ class Book {
 <div id="footer">
 <div id="footer-text">
 Version 0.1<br>
-Last updated 2018-01-10 02:37:03 +05:30
+Last updated 2018-01-12 05:34:38 +05:30
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
