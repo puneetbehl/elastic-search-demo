@@ -5,7 +5,7 @@
 
 To declare a domain class to be searchable, the simplest way is to define the following static property in the code:
 
-[soruce, groovy]
+[source, groovy]
 ----
 static searchable = true
 ----
