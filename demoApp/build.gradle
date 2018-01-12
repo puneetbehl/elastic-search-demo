@@ -22,7 +22,7 @@ apply plugin:"org.grails.grails-web"
 apply plugin:"org.grails.grails-gsp"
 apply plugin:"asset-pipeline"
 
-def elasticsearchVersion = '2.3.4'
+def elasticsearchVersion = '5.4.1'
 ext['elasticsearch.version'] = elasticsearchVersion
 
 bootRun {

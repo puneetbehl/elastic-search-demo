@@ -1,0 +1,57 @@
+[[defaultMapping]]
+=== Default Mapping
+
+:domain: {projectHome}/grails-app/domain
+
+To declare a domain class to be searchable, the simplest way is to define the following static property in the code:
+
+[soruce, groovy]
+----
+static searchable = true
+----
+
+For example:
+
+[source, groovy]
+----
+include::{domain}/esdemo/Store.groovy[]
+----
+
+The plugin will generate a default mapping for each properties of the domain `Store`.
+
+
+[source,json]
+----
+{
+  "mappings": {
+    "store": {
+      "properties": {
+        "owner": {
+          "include_in_all": true,
+          "term_vector": "with_positions_offsets",
+          "type": "text"
+        },
+        "name": {
+          "include_in_all": true,
+          "term_vector": "with_positions_offsets",
+          "type": "text"
+        },
+        "description": {
+          "include_in_all": true,
+          "term_vector": "with_positions_offsets",
+          "type": "text"
+        }
+      }
+    }
+  }
+}
+----
+
+The following test verifies that mappings are generated for each property of domain class.
+
+:integrationTests: {projectHome}/src/integration-test/groovy
+
+[source, groovy]
+----
+include::{integrationTests}/esdemo/StoreSpec.groovy[lines=24..40]
+----

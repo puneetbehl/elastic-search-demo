@@ -131,10 +131,6 @@ elasticSearch:
     datastoreImpl: hibernateDatastore
     client:
         mode: transport
+        hosts:
+          - {host: 192.168.99.100, port: 9300}
     cluster.name: elasticsearch_puneet
-
-environments:
-    test:
-      elasticSearch:
-        index:
-          name: esdemo_test

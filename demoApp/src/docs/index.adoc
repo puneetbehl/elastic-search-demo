@@ -5,4 +5,6 @@ Puneet Behl
 
 include::installation.adoc[]
 
+include::mapping.adoc[]
+
 include::boost.adoc[]

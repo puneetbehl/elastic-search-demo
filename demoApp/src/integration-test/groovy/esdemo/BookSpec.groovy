@@ -22,7 +22,7 @@ class BookSpec extends Specification {
         setup:
         List<Book> books =[]
         books << new Book(title: "Elasticsearch Introduction", content: "basic introduction", datePublished: new Date()).save(flush: true, failOnError: true)
-        books << new Book(title: "Hello World", content: "Elasticsearch", datePublished: new Date()).save(flush: true, failOnError: true)
+        books << new Book(title: "Hello World", content: "Elasticsearch Introduction", datePublished: new Date()).save(flush: true, failOnError: true)
 
         when:
         elasticSearchService.index(Book)
