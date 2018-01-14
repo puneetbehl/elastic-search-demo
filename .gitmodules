@@ -1,4 +1,4 @@
 [submodule "plugin"]
         path = plugin
         url = git@github.com:noamt/elasticsearch-grails-plugin.git
-	branch = 2.4.0.RC2
+        branch = 2.4.0.RC2
