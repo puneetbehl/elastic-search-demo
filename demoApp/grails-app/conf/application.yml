@@ -89,8 +89,10 @@ endpoints:
 hibernate:
     cache:
         queries: false
-        use_second_level_cache: false
-        use_query_cache: false
+        use_second_level_cache: true
+        use_query_cache: true
+        provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
+        region.factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 dataSource:
     pooled: true
     jmxExport: true
@@ -137,3 +139,5 @@ elasticSearch:
         hosts:
           - {host: 192.168.99.100, port: 9300}
     cluster.name: elasticsearch_puneet
+    disableAutoIndex: false
+    bulkIndexOnStartup: true
