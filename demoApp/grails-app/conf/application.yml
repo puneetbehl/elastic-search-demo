@@ -141,3 +141,18 @@ elasticSearch:
     cluster.name: elasticsearch_puneet
     disableAutoIndex: false
     bulkIndexOnStartup: true
+    index:
+        store.type: simplefs
+        settings:
+            analysis:
+                filter:
+                    replace_synonyms:
+                        type: synonym
+                        synonyms: ['abc => xyz']
+                analyzer:
+                    test_analyzer:
+                        tokenizer: standard
+                        filter: ['lowercase']
+                    repl_analyzer:
+                        tokenizer: standard
+                        filter: ['lowercase', 'replace_synonyms']
