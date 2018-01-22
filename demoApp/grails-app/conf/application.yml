@@ -6,6 +6,11 @@ grails:
     spring:
         transactionManagement:
             proxies: false
+    gorm:
+        reactor:
+            # Whether to translate GORM events into Reactor events
+            # Disabled by default for performance reasons
+            events: false
 info:
     app:
         name: '@info.app.name@'
@@ -85,15 +90,15 @@ hibernate:
     cache:
         queries: false
         use_second_level_cache: true
-        use_query_cache: false
-        region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
-
+        use_query_cache: true
+        provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
+        region.factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 dataSource:
     pooled: true
     jmxExport: true
     driverClassName: org.h2.Driver
     username: sa
-    password:
+    password: ''
 
 environments:
     development:
@@ -134,3 +139,20 @@ elasticSearch:
         hosts:
           - {host: 192.168.99.100, port: 9300}
     cluster.name: elasticsearch_puneet
+    disableAutoIndex: false
+    bulkIndexOnStartup: true
+    index:
+        store.type: simplefs
+        settings:
+            analysis:
+                filter:
+                    replace_synonyms:
+                        type: synonym
+                        synonyms: ['abc => xyz']
+                analyzer:
+                    test_analyzer:
+                        tokenizer: standard
+                        filter: ['lowercase']
+                    repl_analyzer:
+                        tokenizer: standard
+                        filter: ['lowercase', 'replace_synonyms']
