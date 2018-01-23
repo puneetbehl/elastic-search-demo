@@ -1,14 +1,15 @@
 buildscript {
+    ext {
+        grailsVersion = project.grailsVersion
+    }
     repositories {
         mavenLocal()
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.11.6"
-        classpath "org.grails.plugins:hibernate5:6.0.4"
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
-        classpath 'org.ajoberstar:gradle-git:1.4.2'
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.8.2"
+        classpath "org.grails.plugins:hibernate4:5.0.10"
     }
 }
 
@@ -25,17 +26,14 @@ apply plugin:"asset-pipeline"
 def elasticsearchVersion = '5.4.1'
 ext['elasticsearch.version'] = elasticsearchVersion
 
-bootRun {
-    jvmArgs = ["-Des.path.home=${System.properties['ES_HOME']}"]
+ext {
+    grailsVersion = project.grailsVersion
+    gradleWrapperVersion = project.gradleWrapperVersion
 }
 
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
-}
-
-configurations {
-    compile.exclude module: "spring-boot-starter-tomcat"
 }
 
 dependencyManagement {
@@ -50,29 +48,24 @@ dependencies {
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"
     compile "org.springframework.boot:spring-boot-starter-actuator"
-    provided "org.springframework.boot:spring-boot-starter-jetty"
+    compile "org.springframework.boot:spring-boot-starter-tomcat"
     compile "org.grails:grails-dependencies"
     compile "org.grails:grails-web-boot"
     compile "org.grails.plugins:cache"
     compile "org.grails.plugins:scaffolding"
-    compile "org.grails.plugins:hibernate5"
-    compile "org.hibernate:hibernate-core:5.1.2.Final"
-    compile "org.hibernate:hibernate-ehcache:5.1.2.Final"
-//    compile project(':plugin')
+    compile "org.grails.plugins:hibernate4"
+    compile "org.hibernate:hibernate-ehcache"
     console "org.grails:grails-console"
+    compile "org.apache.logging.log4j:log4j-api:2.7"
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
     profile "org.grails.profiles:web"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.11.6"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.8.2"
     runtime "com.h2database:h2"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails.plugins:geb"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 }
-
-bootRun {
-    jvmArgs('-Dspring.output.ansi.enabled=always')
-}
-
 
 assets {
     minifyJs = true
@@ -84,6 +77,3 @@ grails {
         compile project(':plugin')
     }
 }
-
-apply from: "documentation.gradle"
-apply from: "publish.gradle"
